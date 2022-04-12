@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Board } from "./components/Board";
-
+import { ResetButton } from "./components/ResetButton";
 function App() {
   //Default Color Selection
   const colors = ["DarkViolet", "orange", "DarkCyan", "red", "yellow", "navy"];
 
   //Assign square dimensions
-  const width = 10;
+  const width = 8;
 
   const [currentColorArrangement, setCurrentColorArrangement] = useState([
     ["DarkViolet", "navy", "red", "yellow", "DarkViolet", "red", "DarkViolet", "orange"],
@@ -28,10 +28,10 @@ function App() {
   const [runChange, setRunChange] = useState(false);
   const [toggleClick, setToggleClick] = useState(true);
   const [boardSolved, setBoardSolved] = useState(false);
+  const [sliderRange, setSliderRange] = useState(50);
 
   const checkBoard = () => {
     // if (boardSolved) return;
-
     let allHitsVertical = [];
     let allHitsHorizontal = [];
     let allHits = [];
@@ -179,7 +179,7 @@ function App() {
       checkFirstRow();
       moveIntoBoxBelow();
       setCurrentColorArrangement([...currentColorArrangement]);
-    }, 500);
+    }, sliderRange * 10);
     return () => clearInterval(timer);
   }, [checkBoard, checkFirstRow, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
 
@@ -203,6 +203,10 @@ function App() {
     }
   };
 
+  const resetGameBoard = () => {
+    createBoard();
+  };
+
   return (
     <div className="App">
       <h1>Bejewled</h1>
@@ -214,6 +218,21 @@ function App() {
         secondClickedRow={secondClickedRow}
         secondClickedCol={secondClickedCol}
       />
+      <ResetButton resetBoard={resetGameBoard} />
+      <div className="slider-parent">
+        <h2 className="test">Set Speed:</h2>
+        <input
+          type="range"
+          min="1"
+          max="100"
+          className="slider"
+          value={sliderRange}
+          onChange={({ target: { value: radius } }) => {
+            setSliderRange(radius);
+          }}
+        />
+        <div className="bubble">{sliderRange}</div>
+      </div>
     </div>
   );
 }

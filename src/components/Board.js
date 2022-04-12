@@ -11,9 +11,9 @@ export const Board = ({
   secondClickedCol,
 }) => {
   return (
-    <div className="board">
+    <div>
       {board.map((rowArray, row) => (
-        <div key={row}>
+        <div key={row} className="board">
           {rowArray.map((color, col) => {
             const clicked =
               (col === firstClickedCol && row === firstClickedRow) ||
