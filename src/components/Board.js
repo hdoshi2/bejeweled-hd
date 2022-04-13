@@ -32,13 +32,3 @@ export const Board = ({
     </div>
   );
 };
-
-//   return (
-//     <div className="board">
-//       {board.map((color, index) => {
-//         const clicked = index === firstClicked || index === secondClicked;
-//         return <Box key={index} value={color} onClick={() => onClick(index)} selected={clicked} />;
-//       })}
-//     </div>
-//   );
-// };
