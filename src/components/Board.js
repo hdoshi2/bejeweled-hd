@@ -1,18 +1,15 @@
 import React from "react";
 import { Box } from "./Box";
 import "./Board.css";
+import useProcessMove from "../hooks/useProcessMove";
 
-export const Board = ({
-  board,
-  onClick,
-  firstClickedRow,
-  firstClickedCol,
-  secondClickedRow,
-  secondClickedCol,
-}) => {
+
+export const Board = ({ currentColorArrangement, checkBoard }) => {
+  const { firstClickedRow, firstClickedCol, secondClickedRow, secondClickedCol, handleBoxClick } =
+    useProcessMove({ currentColorArrangement, checkBoard });
   return (
     <div>
-      {board.map((rowArray, row) => (
+      {currentColorArrangement.map((rowArray, row) => (
         <div key={row} className="board">
           {rowArray.map((color, col) => {
             const clicked =
@@ -22,7 +19,7 @@ export const Board = ({
               <Box
                 key={`${row}=${col}`}
                 value={color}
-                onClick={() => onClick(row, col)}
+                onClick={() => handleBoxClick(row, col)}
                 selected={clicked}
               />
             );

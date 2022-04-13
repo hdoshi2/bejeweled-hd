@@ -3,8 +3,8 @@ import "./InstructionCard.css";
 
 export const InstructionCard = () => {
   return (
-    <div class="card">
-      <div class="container">
+    <div className="card">
+      <div className="container">
         <h4>
           <b>Welcome to Bejeweled. Instructions to play are provided below:</b>
         </h4>
