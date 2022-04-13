@@ -10,6 +10,7 @@ import { Slider } from "./components/Slider";
 import useCheckBoard from "./hooks/useCheckBoard";
 import { width, colorScheme } from "./data/config";
 import { board_8x8_2 } from "./data/sampleBoards";
+import { buildRandomBoard } from "./utils";
 
 const App = () => {
   const [colors, setColorStyle] = useState(colorScheme);
@@ -19,57 +20,24 @@ const App = () => {
   const [secondClickedCol, setSecondClickedCol] = useState(null);
   const [runChange, setRunChange] = useState(false);
   const [toggleClick, setToggleClick] = useState(true);
-  const [boardSolved, setBoardSolved] = useState(false);
-  const [processingBoard, setProcessingBoard] = useState(false);
   //Range set to speed assigned as blocks and removed
   const [sliderRange, setSliderRange] = useState(50);
 
-  const { currentColorArrangement, setCurrentColorArrangement, checkBoard } = useCheckBoard({
+  const {
+    currentColorArrangement,
+    boardSolved,
+    setCurrentColorArrangement,
+    setBoardSolved,
+    checkBoard,
+    checkFirstRow,
+    moveIntoBoxBelow,
+  } = useCheckBoard({
+    colors,
     width,
   });
 
-  const checkFirstRow = () => {
-    // if (boardSolved) return;
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row === 0 && currentColor === "") {
-          const randomNumber = Math.floor(Math.random() * colors.length);
-          currentColorArrangement[row][col] = colors[randomNumber];
-        }
-      }
-    }
-  };
-
-  const moveIntoBoxBelow = () => {
-    // if (boardSolved) return;
-
-    //Create string for comparison
-    const oldArrangement = JSON.stringify(currentColorArrangement);
-
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row !== width - 1 && currentColorArrangement[row + 1][col] === "") {
-          currentColorArrangement[row + 1][col] = currentColor;
-          currentColorArrangement[row][col] = "";
-        }
-      }
-    }
-
-    //validate if current board is sovled by comparing before/after results
-    if (oldArrangement === JSON.stringify(currentColorArrangement)) {
-      setBoardSolved(true);
-    }
-  };
-
   const processMove = () => {
-
-    if (firstClickedRow == null || secondClickedCol == null) {
-      return;
-    }
-
-    if (processingBoard) {
+    if (firstClickedRow == null || secondClickedRow == null) {
       return;
     }
 
@@ -107,7 +75,6 @@ const App = () => {
       //Reset moved elements
       currentColorArrangement[firstClickedRow][firstClickedCol] = boxFirstColor;
       currentColorArrangement[secondClickedRow][secondClickedCol] = boxSecondColor;
-      // setCurrentColorArrangement([...currentColorArrangement]);
     }
 
     //Reset Selection
@@ -119,54 +86,19 @@ const App = () => {
   };
 
   const createRandomBoard = () => {
+    //Reset selections
     setFirstClickedRow(null);
     setFirstClickedCol(null);
     setSecondClickedRow(null);
     setSecondClickedCol(null);
     setRunChange(false);
 
-    const randomColorArrangement = [];
-    for (let i = 0; i < width; i++) {
-      const newArray = [];
-      for (let j = 0; j < width; j++) {
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        newArray.push(randomColor);
-      }
-      randomColorArrangement.push(newArray);
-    }
-    setCurrentColorArrangement(randomColorArrangement);
+    const board = buildRandomBoard(colors, width);
+    setCurrentColorArrangement(board);
   };
-
-  useEffect(() => {
-    setColorStyle(colorScheme);
-    createRandomBoard();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProcessingBoard(true);
-      checkBoard();
-      checkFirstRow();
-      moveIntoBoxBelow();
-      setCurrentColorArrangement([...currentColorArrangement]);
-      setProcessingBoard(false);
-    }, sliderRange * 10);
-    return () => clearInterval(timer);
-  }, [checkBoard, checkFirstRow, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
-
-  useEffect(() => {
-    processMove();
-  }, [runChange, firstClickedRow, secondClickedRow]);
 
   const handleBoxClick = (row, column) => {
     //Toggle to differentiate between first and second click
-    if (processingBoard) {
-      console.log("processing");
-      return;
-    }
-    console.log("handleBoxClick");
-    console.log(row, column);
-
     if (toggleClick) {
       setFirstClickedRow(row);
       setFirstClickedCol(column);
@@ -176,8 +108,6 @@ const App = () => {
     }
 
     setToggleClick(!toggleClick);
-    console.log(firstClickedRow);
-    console.log(secondClickedRow);
 
     if (firstClickedRow && secondClickedRow) {
       setRunChange(true);
@@ -187,6 +117,27 @@ const App = () => {
   const handleSpeedRange = (range) => {
     setSliderRange(range);
   };
+
+  //Initialize the Board
+  useEffect(() => {
+    setColorStyle(colorScheme);
+    createRandomBoard();
+  }, []);
+
+  //Process board mechanics as changes/moves are made.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      checkBoard();
+      checkFirstRow();
+      moveIntoBoxBelow();
+      setCurrentColorArrangement([...currentColorArrangement]);
+    }, sliderRange * 10);
+    return () => clearInterval(timer);
+  }, [checkBoard, checkFirstRow, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
+
+  useEffect(() => {
+    processMove();
+  }, [runChange, firstClickedRow, secondClickedRow]);
 
   return (
     <div className="App">

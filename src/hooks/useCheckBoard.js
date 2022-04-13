@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-const useCheckBoard = ({ width }) => {
+const useCheckBoard = ({ colors, width }) => {
   const [currentColorArrangement, setCurrentColorArrangement] = useState([]);
+  const [boardSolved, setBoardSolved] = useState(false);
 
   const checkBoard = () => {
     let allHits = [];
@@ -59,7 +60,50 @@ const useCheckBoard = ({ width }) => {
     return movePossible;
   };
 
-  return { currentColorArrangement, setCurrentColorArrangement, checkBoard };
+  const checkFirstRow = () => {
+    // if (boardSolved) return;
+    for (let row = 0; row < width; row++) {
+      for (let col = 0; col < width; col++) {
+        const currentColor = currentColorArrangement[row][col];
+        if (row === 0 && currentColor === "") {
+          const randomNumber = Math.floor(Math.random() * colors.length);
+          currentColorArrangement[row][col] = colors[randomNumber];
+        }
+      }
+    }
+  };
+
+  const moveIntoBoxBelow = () => {
+    // if (boardSolved) return;
+
+    //Create string for comparison
+    const oldArrangement = JSON.stringify(currentColorArrangement);
+
+    for (let row = 0; row < width; row++) {
+      for (let col = 0; col < width; col++) {
+        const currentColor = currentColorArrangement[row][col];
+        if (row !== width - 1 && currentColorArrangement[row + 1][col] === "") {
+          currentColorArrangement[row + 1][col] = currentColor;
+          currentColorArrangement[row][col] = "";
+        }
+      }
+    }
+
+    //validate if current board is sovled by comparing before/after results
+    if (oldArrangement === JSON.stringify(currentColorArrangement)) {
+      setBoardSolved(true);
+    }
+  };
+
+  return {
+    currentColorArrangement,
+    boardSolved,
+    setCurrentColorArrangement,
+    setBoardSolved,
+    checkBoard,
+    checkFirstRow,
+    moveIntoBoxBelow,
+  };
 };
 
 export default useCheckBoard;
