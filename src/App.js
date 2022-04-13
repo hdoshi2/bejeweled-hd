@@ -1,135 +1,44 @@
+//React
 import React, { useState, useEffect } from "react";
+//css
 import "./App.css";
+//Components
 import { Board } from "./components/Board";
+import { ResetButton } from "./components/ResetButton";
+import { Slider } from "./components/Slider";
+import { InstructionCard } from "./components/InstructionCard";
+//Hooks/Misc
+import useCheckBoard from "./hooks/useCheckBoard";
+import { width, colorScheme } from "./data/config";
+import { board_8x8_2 } from "./data/sampleBoards";
+import { buildRandomBoard } from "./utils";
 
-function App() {
-  //Default Color Selection
-  const colors = ["DarkViolet", "orange", "DarkCyan", "red", "yellow", "navy"];
-
-  //Assign square dimensions
-  const width = 10;
-
-  const [currentColorArrangement, setCurrentColorArrangement] = useState([
-    ["DarkViolet", "navy", "red", "yellow", "DarkViolet", "red", "DarkViolet", "orange"],
-    ["DarkCyan", "DarkCyan", "yellow", "navy", "orange", "DarkCyan", "red", "DarkCyan"],
-    ["DarkCyan", "orange", "DarkCyan", "DarkCyan", "DarkCyan", "red", "red", "DarkCyan"],
-    ["navy", "orange", "yellow", "red", "DarkViolet", "red", "red", "red"],
-    ["DarkViolet", "DarkCyan", "red", "DarkCyan", "DarkViolet", "DarkViolet", "yellow", "DarkCyan"],
-    ["navy", "navy", "navy", "DarkCyan", "navy", "DarkViolet", "red", "navy"],
-    ["orange", "red", "navy", "yellow", "yellow", "DarkViolet", "DarkViolet", "DarkViolet"],
-    ["DarkViolet", "yellow", "DarkCyan", "navy", "navy", "DarkViolet", "DarkViolet", "orange"],
-  ]);
-
-  // const [currentColorArrangement, setCurrentColorArrangement] = useState([]);
+const App = () => {
+  const [colors, setColorStyle] = useState(colorScheme);
   const [firstClickedRow, setFirstClickedRow] = useState(null);
   const [firstClickedCol, setFirstClickedCol] = useState(null);
   const [secondClickedRow, setSecondClickedRow] = useState(null);
   const [secondClickedCol, setSecondClickedCol] = useState(null);
   const [runChange, setRunChange] = useState(false);
   const [toggleClick, setToggleClick] = useState(true);
-  const [boardSolved, setBoardSolved] = useState(false);
+  //Range set to speed assigned as blocks and removed
+  const [sliderRange, setSliderRange] = useState(50);
 
-  const checkBoard = () => {
-    // if (boardSolved) return;
-
-    let allHitsVertical = [];
-    let allHitsHorizontal = [];
-    let allHits = [];
-    let movePossible = false;
-
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-
-        //Check Horizontally
-        if (col < width - 2) {
-          let currentStreakHoriz = 1;
-          let matchesHoriz = [[col, row]];
-          for (let i = col + 1; i < width; i++) {
-            const nextColor = currentColorArrangement[row][i];
-            if (currentColor === nextColor) {
-              currentStreakHoriz++;
-              matchesHoriz.push(...[[i, row]]);
-            } else {
-              break;
-            }
-          }
-          if (currentStreakHoriz > 2) {
-            // matchesHoriz.forEach((hit) => (currentColorArrangement[hit[1]][hit[0]] = ""));
-            allHitsHorizontal.push(...[matchesHoriz]);
-            allHits.push(...matchesHoriz);
-            movePossible = true;
-          }
-        }
-
-        //Check Vertically
-        if (row < width - 2) {
-          let currentStreakVertical = 1;
-          let matchesVertical = [[col, row]];
-          for (let i = row + 1; i < width; i++) {
-            const nextColor = currentColorArrangement[i][col];
-            if (currentColor === nextColor && currentColor !== "") {
-              currentStreakVertical++;
-              matchesVertical.push(...[[col, i]]);
-            } else {
-              break;
-            }
-          }
-          if (currentStreakVertical > 2) {
-            // matchesVertical.forEach((hit) => (currentColorArrangement[hit[1]][hit[0]] = ""));
-            allHitsVertical.push(...[matchesVertical]);
-            allHits.push(...matchesVertical);
-            movePossible = true;
-          }
-        }
-      }
-    }
-
-    //Clear cells that meet match criteria
-    allHits.forEach((item) => {
-      currentColorArrangement[item[1]][item[0]] = "";
-    });
-
-    return movePossible;
-  };
-
-  const checkFirstRow = () => {
-    // if (boardSolved) return;
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row === 0 && currentColor === "") {
-          const randomNumber = Math.floor(Math.random() * colors.length);
-          currentColorArrangement[row][col] = colors[randomNumber];
-        }
-      }
-    }
-  };
-
-  const moveIntoBoxBelow = () => {
-    // if (boardSolved) return;
-
-    //Create string for comparison
-    const oldArrangement = JSON.stringify(currentColorArrangement);
-
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row !== width - 1 && currentColorArrangement[row + 1][col] === "") {
-          currentColorArrangement[row + 1][col] = currentColor;
-          currentColorArrangement[row][col] = "";
-        }
-      }
-    }
-
-    //validate if current board is sovled by comparing before/after results
-    if (oldArrangement === JSON.stringify(currentColorArrangement)) {
-      setBoardSolved(true);
-    }
-  };
+  const {
+    currentColorArrangement,
+    boardSolved,
+    setCurrentColorArrangement,
+    setBoardSolved,
+    checkBoard,
+    checkFirstRowAndSpawn,
+    moveIntoBoxBelow,
+  } = useCheckBoard({
+    colors,
+    width,
+  });
 
   const processMove = () => {
-    if (!firstClickedRow || !secondClickedCol) {
+    if (firstClickedRow == null || secondClickedRow == null) {
       return;
     }
 
@@ -139,13 +48,34 @@ function App() {
     currentColorArrangement[firstClickedRow][firstClickedCol] = boxSecondColor;
     currentColorArrangement[secondClickedRow][secondClickedCol] = boxFirstColor;
 
-    const movePossible = checkBoard();
+    //Valid adjacent locations for second clicked box
+    const validLocations = [
+      [firstClickedRow + 1, firstClickedCol], //Top
+      [firstClickedRow - 1, firstClickedCol], //Bottom
+      [firstClickedRow, firstClickedCol + 1], //Right
+      [firstClickedRow, firstClickedCol - 1], //Left
+    ];
 
-    if (!movePossible) {
-      console.log("INVALID");
+    let validMove = false;
+    let moveCreatesHits = false;
+
+    //Determine if second clicked box is adjacent to the first box
+    validLocations.forEach((loc) => {
+      if (secondClickedRow === loc[0] && secondClickedCol === loc[1]) {
+        validMove = true;
+      }
+    });
+    //If move is valid, check if any hits can be created
+    //TODO Optimize checkBoard to only check at local where move being made instead of looping through full board
+    if (validMove) {
+      moveCreatesHits = checkBoard();
+    }
+
+    if (!moveCreatesHits) {
+      console.log("No hits");
+      //Reset moved elements
       currentColorArrangement[firstClickedRow][firstClickedCol] = boxFirstColor;
       currentColorArrangement[secondClickedRow][secondClickedCol] = boxSecondColor;
-      setCurrentColorArrangement([...currentColorArrangement]);
     }
 
     //Reset Selection
@@ -156,38 +86,20 @@ function App() {
     setRunChange(false);
   };
 
-  const createBoard = () => {
-    const randomColorArrangement = [];
-    for (let i = 0; i < width; i++) {
-      const newArray = [];
-      for (let j = 0; j < width; j++) {
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        newArray.push(randomColor);
-      }
-      randomColorArrangement.push(newArray);
-    }
-    setCurrentColorArrangement(randomColorArrangement);
+  const createRandomBoard = () => {
+    //Reset selections
+    setFirstClickedRow(null);
+    setFirstClickedCol(null);
+    setSecondClickedRow(null);
+    setSecondClickedCol(null);
+    setRunChange(false);
+
+    const board = buildRandomBoard(colors, width);
+    setCurrentColorArrangement(board);
   };
 
-  useEffect(() => {
-    createBoard();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      checkBoard();
-      checkFirstRow();
-      moveIntoBoxBelow();
-      setCurrentColorArrangement([...currentColorArrangement]);
-    }, 500);
-    return () => clearInterval(timer);
-  }, [checkBoard, checkFirstRow, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
-
-  useEffect(() => {
-    processMove();
-  }, [runChange, firstClickedRow, secondClickedRow]);
-
   const handleBoxClick = (row, column) => {
+    //Toggle to differentiate between first and second click
     if (toggleClick) {
       setFirstClickedRow(row);
       setFirstClickedCol(column);
@@ -203,9 +115,35 @@ function App() {
     }
   };
 
+  const handleSpeedRange = (range) => {
+    setSliderRange(range);
+  };
+
+  //Initialize the Board
+  useEffect(() => {
+    setColorStyle(colorScheme);
+    createRandomBoard();
+  }, []);
+
+  //Process board mechanics as changes/moves are made.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      checkBoard();
+      checkFirstRowAndSpawn();
+      moveIntoBoxBelow();
+      setCurrentColorArrangement([...currentColorArrangement]);
+    }, sliderRange * 10);
+    return () => clearInterval(timer);
+  }, [checkBoard, checkFirstRowAndSpawn, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
+
+  useEffect(() => {
+    processMove();
+  }, [runChange, firstClickedRow, secondClickedRow]);
+
   return (
     <div className="App">
-      <h1>Bejewled</h1>
+      <h1>Bejeweled</h1>
+      <InstructionCard />
       <Board
         board={currentColorArrangement}
         onClick={handleBoxClick}
@@ -214,8 +152,10 @@ function App() {
         secondClickedRow={secondClickedRow}
         secondClickedCol={secondClickedCol}
       />
+      <Slider sliderRange={sliderRange} setRange={handleSpeedRange} />
+      <ResetButton resetBoard={createRandomBoard} />
     </div>
   );
-}
+};
 
 export default App;
