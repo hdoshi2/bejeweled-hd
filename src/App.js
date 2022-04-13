@@ -6,7 +6,8 @@ import "./App.css";
 import { Board } from "./components/Board";
 import { ResetButton } from "./components/ResetButton";
 import { Slider } from "./components/Slider";
-//Hooks/misc
+import { InstructionCard } from "./components/InstructionCard";
+//Hooks/Misc
 import useCheckBoard from "./hooks/useCheckBoard";
 import { width, colorScheme } from "./data/config";
 import { board_8x8_2 } from "./data/sampleBoards";
@@ -29,7 +30,7 @@ const App = () => {
     setCurrentColorArrangement,
     setBoardSolved,
     checkBoard,
-    checkFirstRow,
+    checkFirstRowAndSpawn,
     moveIntoBoxBelow,
   } = useCheckBoard({
     colors,
@@ -128,12 +129,12 @@ const App = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       checkBoard();
-      checkFirstRow();
+      checkFirstRowAndSpawn();
       moveIntoBoxBelow();
       setCurrentColorArrangement([...currentColorArrangement]);
     }, sliderRange * 10);
     return () => clearInterval(timer);
-  }, [checkBoard, checkFirstRow, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
+  }, [checkBoard, checkFirstRowAndSpawn, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
 
   useEffect(() => {
     processMove();
@@ -141,7 +142,8 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>Bejewled</h1>
+      <h1>Bejeweled</h1>
+      <InstructionCard />
       <Board
         board={currentColorArrangement}
         onClick={handleBoxClick}

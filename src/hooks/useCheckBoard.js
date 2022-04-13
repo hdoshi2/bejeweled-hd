@@ -60,7 +60,7 @@ const useCheckBoard = ({ colors, width }) => {
     return movePossible;
   };
 
-  const checkFirstRow = () => {
+  const checkFirstRowAndSpawn = () => {
     // if (boardSolved) return;
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
@@ -101,7 +101,7 @@ const useCheckBoard = ({ colors, width }) => {
     setCurrentColorArrangement,
     setBoardSolved,
     checkBoard,
-    checkFirstRow,
+    checkFirstRowAndSpawn,
     moveIntoBoxBelow,
   };
 };

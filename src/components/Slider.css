@@ -5,7 +5,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  color: #e684ff;
 }
 
 .slider {
@@ -26,7 +25,7 @@
   appearance: none;
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #e684ff; /* Green background */
+  background: #8f00b3; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
@@ -36,5 +35,4 @@
 
 .bubble {
   position: relative;
-  color: #e684ff;
 }
