@@ -4,7 +4,7 @@ import { Board } from "./components/Board";
 import { ResetButton } from "./components/ResetButton";
 function App() {
   //Default Color Selection
-  const colors = ["DarkViolet", "orange", "DarkCyan", "red", "yellow", "navy"];
+  const colors = ["DarkViolet", "orange", "DarkCyan", "red", "yellow", "navy", "lightpink"];
 
   //Assign square dimensions
   const width = 8;
@@ -139,10 +139,34 @@ function App() {
     currentColorArrangement[firstClickedRow][firstClickedCol] = boxSecondColor;
     currentColorArrangement[secondClickedRow][secondClickedCol] = boxFirstColor;
 
-    const movePossible = checkBoard();
+    const validLocations = [
+      [firstClickedRow + 1, firstClickedCol], //Top
+      [firstClickedRow - 1, firstClickedCol], //Bottom
+      [firstClickedRow, firstClickedCol + 1], //Right
+      [firstClickedRow, firstClickedCol - 1], //Left
+    ];
 
-    if (!movePossible) {
-      console.log("INVALID");
+    let validMove = false;
+    let moveCreatesHits = false;
+    console.log("validLocations", validLocations);
+    console.log("secondClickedRow", secondClickedRow);
+    console.log("secondClickedCol", secondClickedCol);
+    
+    validLocations.forEach((loc) => {
+      if (secondClickedRow === loc[0] && secondClickedCol === loc[1]) {
+        validMove = true;
+      }
+    });
+
+    //If move is valid, check if any hits can be created
+    //TODO Optimize checkBoard to only check at local where move being made instead of looping through full board
+    if (validMove) {
+      moveCreatesHits = checkBoard();
+    }
+
+    if (!moveCreatesHits) {
+      console.log("No hits");
+      //Reset moved elements
       currentColorArrangement[firstClickedRow][firstClickedCol] = boxFirstColor;
       currentColorArrangement[secondClickedRow][secondClickedCol] = boxSecondColor;
       setCurrentColorArrangement([...currentColorArrangement]);
@@ -218,7 +242,6 @@ function App() {
         secondClickedRow={secondClickedRow}
         secondClickedCol={secondClickedCol}
       />
-      <ResetButton resetBoard={resetGameBoard} />
       <div className="slider-parent">
         <h2 className="test">Set Speed:</h2>
         <input
@@ -233,6 +256,7 @@ function App() {
         />
         <div className="bubble">{sliderRange}</div>
       </div>
+      <ResetButton resetBoard={resetGameBoard} />
     </div>
   );
 }
