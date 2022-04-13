@@ -6,6 +6,7 @@ body {
   margin: 0;
   background-color: #efefef;
   font-family: "Segoe UI";
+  color: #8f00b3;
 }
 
 h1 {
@@ -13,6 +14,6 @@ h1 {
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  margin: 3rem auto;
+  margin: 1rem auto;
   font-weight: bold;
 }

@@ -11,9 +11,9 @@ export const Board = ({
   secondClickedCol,
 }) => {
   return (
-    <div className="board">
+    <div>
       {board.map((rowArray, row) => (
-        <div key={row}>
+        <div key={row} className="board">
           {rowArray.map((color, col) => {
             const clicked =
               (col === firstClickedCol && row === firstClickedRow) ||
@@ -32,13 +32,3 @@ export const Board = ({
     </div>
   );
 };
-
-//   return (
-//     <div className="board">
-//       {board.map((color, index) => {
-//         const clicked = index === firstClicked || index === secondClicked;
-//         return <Box key={index} value={color} onClick={() => onClick(index)} selected={clicked} />;
-//       })}
-//     </div>
-//   );
-// };
