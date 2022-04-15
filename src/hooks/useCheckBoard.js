@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
 const useCheckBoard = ({ colors, width }) => {
-  const [currentColorArrangement, setCurrentColorArrangement] = useState([]);
+  const [board, setBoard] = useState([]);
+  let currentBoard = [...board];
   const [boardSolved, setBoardSolved] = useState(false);
   //Range set to speed assigned as blocks and removed
   const [sliderRange, setSliderRange] = useState(50);
@@ -13,14 +14,14 @@ const useCheckBoard = ({ colors, width }) => {
 
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
+        const currentColor = currentBoard[row][col];
 
         //Check Horizontally
         if (col < width - 2) {
           let currentStreakHoriz = 1;
           let matchesHoriz = [[col, row]];
           for (let i = col + 1; i < width; i++) {
-            const nextColor = currentColorArrangement[row][i];
+            const nextColor = currentBoard[row][i];
             if (currentColor === nextColor) {
               currentStreakHoriz++;
               matchesHoriz.push(...[[i, row]]);
@@ -39,7 +40,7 @@ const useCheckBoard = ({ colors, width }) => {
           let currentStreakVertical = 1;
           let matchesVertical = [[col, row]];
           for (let i = row + 1; i < width; i++) {
-            const nextColor = currentColorArrangement[i][col];
+            const nextColor = currentBoard[i][col];
             if (currentColor === nextColor && currentColor !== "") {
               currentStreakVertical++;
               matchesVertical.push(...[[col, i]]);
@@ -57,7 +58,7 @@ const useCheckBoard = ({ colors, width }) => {
 
     //Clear cells that meet match criteria
     allHits.forEach((item) => {
-      currentColorArrangement[item[1]][item[0]] = "";
+      currentBoard[item[1]][item[0]] = "";
     });
 
     return movePossible;
@@ -67,10 +68,10 @@ const useCheckBoard = ({ colors, width }) => {
     // if (boardSolved) return;
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
+        const currentColor = currentBoard[row][col];
         if (row === 0 && currentColor === "") {
           const randomNumber = Math.floor(Math.random() * colors.length);
-          currentColorArrangement[row][col] = colors[randomNumber];
+          currentBoard[row][col] = colors[randomNumber];
         }
       }
     }
@@ -80,20 +81,19 @@ const useCheckBoard = ({ colors, width }) => {
     // if (boardSolved) return;
 
     //Create string for comparison
-    const oldArrangement = JSON.stringify(currentColorArrangement);
-
+    const oldArrangement = JSON.stringify(board);
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row !== width - 1 && currentColorArrangement[row + 1][col] === "") {
-          currentColorArrangement[row + 1][col] = currentColor;
-          currentColorArrangement[row][col] = "";
+        const currentColor = currentBoard[row][col];
+        if (row !== width - 1 && currentBoard[row + 1][col] === "") {
+          currentBoard[row + 1][col] = currentColor;
+          currentBoard[row][col] = "";
         }
       }
     }
-
+    setBoard([...currentBoard]);
     //validate if current board is sovled by comparing before/after results
-    if (oldArrangement === JSON.stringify(currentColorArrangement)) {
+    if (oldArrangement === JSON.stringify(board)) {
       setBoardSolved(true);
     }
   };
@@ -104,14 +104,13 @@ const useCheckBoard = ({ colors, width }) => {
       checkBoard();
       checkFirstRowAndSpawn();
       moveIntoBoxBelow();
-      setCurrentColorArrangement([...currentColorArrangement]);
     }, sliderRange * 10);
     return () => clearInterval(timer);
-  }, [checkBoard, checkFirstRowAndSpawn, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
+  }, [currentBoard, board]);
 
   return {
-    currentColorArrangement,
-    setCurrentColorArrangement,
+    setBoard,
+    currentBoard,
     checkBoard,
     sliderRange,
     setSliderRange,

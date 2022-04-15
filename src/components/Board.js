@@ -3,13 +3,12 @@ import { Box } from "./Box";
 import "./Board.css";
 import useProcessMove from "../hooks/useProcessMove";
 
-
-export const Board = ({ currentColorArrangement, checkBoard }) => {
+export const Board = ({ currentBoard, checkBoard }) => {
   const { firstClickedRow, firstClickedCol, secondClickedRow, secondClickedCol, handleBoxClick } =
-    useProcessMove({ currentColorArrangement, checkBoard });
+    useProcessMove({ currentBoard, checkBoard });
   return (
     <div>
-      {currentColorArrangement.map((rowArray, row) => (
+      {currentBoard.map((rowArray, row) => (
         <div key={row} className="board">
           {rowArray.map((color, col) => {
             const clicked =

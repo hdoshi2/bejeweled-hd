@@ -13,14 +13,7 @@ import { width, colorScheme } from "./data/config";
 import { buildRandomBoard } from "./utils";
 
 const App = () => {
-
-  const {
-    currentColorArrangement,
-    setCurrentColorArrangement,
-    checkBoard,
-    sliderRange,
-    setSliderRange,
-  } = useCheckBoard({
+  let { setBoard, currentBoard, checkBoard, sliderRange, setSliderRange } = useCheckBoard({
     colors: colorScheme,
     width,
   });
@@ -34,22 +27,20 @@ const App = () => {
     // setRunChange(false);
 
     const board = buildRandomBoard(colorScheme, width);
-    setCurrentColorArrangement(board);
+    setBoard(board);
+    currentBoard = [...board];
   };
-
 
   //Initialize the Board
   useEffect(() => {
     createRandomBoard();
   }, []);
 
-
-
   return (
     <div className="App">
       <h1>Bejeweled</h1>
       <InstructionCard />
-      <Board currentColorArrangement={currentColorArrangement} checkBoard={checkBoard} />
+      <Board currentBoard={currentBoard} checkBoard={checkBoard} />
       <Slider sliderRange={sliderRange} setRange={setSliderRange} />
       <ResetButton resetBoard={createRandomBoard} />
     </div>

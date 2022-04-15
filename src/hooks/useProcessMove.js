@@ -1,7 +1,7 @@
 //React
 import React, { useState, useEffect } from "react";
 
-const useProcessMove = ({ currentColorArrangement, checkBoard }) => {
+const useProcessMove = ({ currentBoard, checkBoard }) => {
   const [firstClickedRow, setFirstClickedRow] = useState(null);
   const [firstClickedCol, setFirstClickedCol] = useState(null);
   const [secondClickedRow, setSecondClickedRow] = useState(null);
@@ -18,11 +18,11 @@ const useProcessMove = ({ currentColorArrangement, checkBoard }) => {
       return;
     }
 
-    const boxFirstColor = currentColorArrangement[firstClickedRow][firstClickedCol];
-    const boxSecondColor = currentColorArrangement[secondClickedRow][secondClickedCol];
+    const boxFirstColor = currentBoard[firstClickedRow][firstClickedCol];
+    const boxSecondColor = currentBoard[secondClickedRow][secondClickedCol];
 
-    currentColorArrangement[firstClickedRow][firstClickedCol] = boxSecondColor;
-    currentColorArrangement[secondClickedRow][secondClickedCol] = boxFirstColor;
+    currentBoard[firstClickedRow][firstClickedCol] = boxSecondColor;
+    currentBoard[secondClickedRow][secondClickedCol] = boxFirstColor;
 
     //Valid adjacent locations for second clicked box
     const validLocations = [
@@ -50,8 +50,8 @@ const useProcessMove = ({ currentColorArrangement, checkBoard }) => {
     if (!moveCreatesHits) {
       console.log("No hits");
       //Reset moved elements
-      currentColorArrangement[firstClickedRow][firstClickedCol] = boxFirstColor;
-      currentColorArrangement[secondClickedRow][secondClickedCol] = boxSecondColor;
+      currentBoard[firstClickedRow][firstClickedCol] = boxFirstColor;
+      currentBoard[secondClickedRow][secondClickedCol] = boxSecondColor;
     }
 
     //Reset Selection
