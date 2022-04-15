@@ -10,24 +10,18 @@ import { InstructionCard } from "./components/InstructionCard";
 //Hooks/Misc
 import useCheckBoard from "./hooks/useCheckBoard";
 import { width, colorScheme } from "./data/config";
-import { board_8x8_2 } from "./data/sampleBoards";
 import { buildRandomBoard } from "./utils";
 
 const App = () => {
-  const [colors, setColorStyle] = useState(colorScheme);
-  //Range set to speed assigned as blocks and removed
-  const [sliderRange, setSliderRange] = useState(50);
 
   const {
     currentColorArrangement,
-    boardSolved,
     setCurrentColorArrangement,
-    setBoardSolved,
     checkBoard,
-    checkFirstRowAndSpawn,
-    moveIntoBoxBelow,
+    sliderRange,
+    setSliderRange,
   } = useCheckBoard({
-    colors,
+    colors: colorScheme,
     width,
   });
 
@@ -39,37 +33,24 @@ const App = () => {
     // setSecondClickedCol(null);
     // setRunChange(false);
 
-    const board = buildRandomBoard(colors, width);
+    const board = buildRandomBoard(colorScheme, width);
     setCurrentColorArrangement(board);
   };
 
-  const handleSpeedRange = (range) => {
-    setSliderRange(range);
-  };
 
   //Initialize the Board
   useEffect(() => {
-    setColorStyle(colorScheme);
     createRandomBoard();
   }, []);
 
-  //Process board mechanics as changes/moves are made.
-  useEffect(() => {
-    const timer = setInterval(() => {
-      checkBoard();
-      checkFirstRowAndSpawn();
-      moveIntoBoxBelow();
-      setCurrentColorArrangement([...currentColorArrangement]);
-    }, sliderRange * 10);
-    return () => clearInterval(timer);
-  }, [checkBoard, checkFirstRowAndSpawn, moveIntoBoxBelow, boardSolved, currentColorArrangement]);
+
 
   return (
     <div className="App">
       <h1>Bejeweled</h1>
       <InstructionCard />
       <Board currentColorArrangement={currentColorArrangement} checkBoard={checkBoard} />
-      <Slider sliderRange={sliderRange} setRange={handleSpeedRange} />
+      <Slider sliderRange={sliderRange} setRange={setSliderRange} />
       <ResetButton resetBoard={createRandomBoard} />
     </div>
   );
