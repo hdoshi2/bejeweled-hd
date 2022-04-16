@@ -1,17 +1,12 @@
 //React
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const useProcessMove = ({ currentBoard, checkBoard }) => {
   const [firstClickedRow, setFirstClickedRow] = useState(null);
   const [firstClickedCol, setFirstClickedCol] = useState(null);
   const [secondClickedRow, setSecondClickedRow] = useState(null);
   const [secondClickedCol, setSecondClickedCol] = useState(null);
-  const [runChange, setRunChange] = useState(false);
   const [toggleClick, setToggleClick] = useState(true);
-
-  useEffect(() => {
-    processMove();
-  }, [firstClickedRow, secondClickedRow]);
 
   const processMove = () => {
     if (firstClickedRow == null || secondClickedRow == null) {
@@ -72,11 +67,11 @@ const useProcessMove = ({ currentBoard, checkBoard }) => {
     }
 
     setToggleClick(!toggleClick);
-
-    if (firstClickedRow && secondClickedRow) {
-      setRunChange(true);
-    }
   };
+
+  useEffect(() => {
+    processMove();
+  }, [firstClickedRow, secondClickedRow, processMove]);
 
   return { firstClickedRow, firstClickedCol, secondClickedRow, secondClickedCol, handleBoxClick };
 };

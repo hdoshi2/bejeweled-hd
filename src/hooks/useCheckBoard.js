@@ -3,10 +3,8 @@ import { useState, useEffect } from "react";
 const useCheckBoard = ({ colors, width }) => {
   const [board, setBoard] = useState([]);
   let currentBoard = [...board];
-  const [boardSolved, setBoardSolved] = useState(false);
   //Range set to speed assigned as blocks and removed
   const [sliderRange, setSliderRange] = useState(50);
-  const [runCheck, setRunCheck] = useState(false);
 
   const checkBoard = () => {
     let allHits = [];
@@ -65,7 +63,6 @@ const useCheckBoard = ({ colors, width }) => {
   };
 
   const checkFirstRowAndSpawn = () => {
-    // if (boardSolved) return;
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
         const currentColor = currentBoard[row][col];
@@ -78,10 +75,6 @@ const useCheckBoard = ({ colors, width }) => {
   };
 
   const moveIntoBoxBelow = () => {
-    // if (boardSolved) return;
-
-    //Create string for comparison
-    const oldArrangement = JSON.stringify(board);
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
         const currentColor = currentBoard[row][col];
@@ -92,21 +85,21 @@ const useCheckBoard = ({ colors, width }) => {
       }
     }
     setBoard([...currentBoard]);
-    //validate if current board is sovled by comparing before/after results
-    if (oldArrangement === JSON.stringify(board)) {
-      setBoardSolved(true);
-    }
+  };
+
+  const iterateBoard = () => {
+    checkBoard();
+    checkFirstRowAndSpawn();
+    moveIntoBoxBelow();
   };
 
   //Process board mechanics as changes/moves are made.
   useEffect(() => {
     const timer = setInterval(() => {
-      checkBoard();
-      checkFirstRowAndSpawn();
-      moveIntoBoxBelow();
+      iterateBoard();
     }, sliderRange * 10);
     return () => clearInterval(timer);
-  }, [currentBoard, board]);
+  }, [currentBoard, board, iterateBoard, sliderRange]);
 
   return {
     setBoard,

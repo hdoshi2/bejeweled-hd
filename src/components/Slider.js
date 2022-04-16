@@ -1,5 +1,4 @@
 import React from "react";
-import { Box } from "./Box";
 import "./Slider.css";
 
 export const Slider = ({ sliderRange, setRange }) => {

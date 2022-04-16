@@ -1,5 +1,5 @@
 //React
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 //css
 import "./App.css";
 //Components
@@ -18,7 +18,7 @@ const App = () => {
     width,
   });
 
-  const createRandomBoard = () => {
+  const createRandomBoard = useCallback(() => {
     //Reset selections
     // setFirstClickedRow(null);
     // setFirstClickedCol(null);
@@ -29,7 +29,7 @@ const App = () => {
     const board = buildRandomBoard(colorScheme, width);
     setBoard(board);
     currentBoard = [...board];
-  };
+  }, []);
 
   //Initialize the Board
   useEffect(() => {
