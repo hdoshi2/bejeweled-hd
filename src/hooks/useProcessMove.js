@@ -8,8 +8,14 @@ const useProcessMove = ({ currentBoard, checkBoard }) => {
   const [secondClickedCol, setSecondClickedCol] = useState(null);
   const [isFirstBoxClick, setIsFirstBoxClick] = useState(true);
 
-  const processMove = (secondClickedRow, secondClickedCol) => {
+  const resetSelection = () => {
+    setFirstClickedRow(null);
+    setFirstClickedCol(null);
+    setSecondClickedRow(null);
+    setSecondClickedCol(null);
+  };
 
+  const processMove = (secondClickedRow, secondClickedCol) => {
     const boxFirstColor = currentBoard[firstClickedRow][firstClickedCol];
     const boxSecondColor = currentBoard[secondClickedRow][secondClickedCol];
 
@@ -47,10 +53,7 @@ const useProcessMove = ({ currentBoard, checkBoard }) => {
     }
 
     //Reset Selection
-    setFirstClickedRow(null);
-    setFirstClickedCol(null);
-    setSecondClickedRow(null);
-    setSecondClickedCol(null);
+    resetSelection();
   };
 
   const handleBoxClick = (row, column) => {
@@ -66,7 +69,14 @@ const useProcessMove = ({ currentBoard, checkBoard }) => {
     setIsFirstBoxClick(!isFirstBoxClick);
   };
 
-  return { firstClickedRow, firstClickedCol, secondClickedRow, secondClickedCol, handleBoxClick };
+  return {
+    firstClickedRow,
+    firstClickedCol,
+    secondClickedRow,
+    secondClickedCol,
+    handleBoxClick,
+    resetSelection,
+  };
 };
 
 export default useProcessMove;

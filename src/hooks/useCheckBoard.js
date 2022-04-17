@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const useCheckBoard = ({ colors, width }) => {
   const [board, setBoard] = useState([]);
   let currentBoard = [...board];
-  //Range set to speed assigned as blocks and removed
-  const [sliderRange, setSliderRange] = useState(50);
 
   const checkBoard = () => {
     let allHits = [];
@@ -13,7 +11,6 @@ const useCheckBoard = ({ colors, width }) => {
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
         const currentColor = currentBoard[row][col];
-
         //Check Horizontally
         if (col < width - 2) {
           let currentStreakHoriz = 1;
@@ -90,20 +87,19 @@ const useCheckBoard = ({ colors, width }) => {
     checkFirstRowAndSpawn();
     dropBlocksBelow();
   };
+
   //Process board mechanics as changes/moves are made.
   useEffect(() => {
     const timer = setInterval(() => {
       iterateBoard();
-    }, sliderRange * 10);
+    }, 100);
     return () => clearInterval(timer);
-  }, [currentBoard, board, iterateBoard, sliderRange]);
+  }, [currentBoard, board, iterateBoard]);
 
   return {
     setBoard,
     currentBoard,
     checkBoard,
-    sliderRange,
-    setSliderRange,
   };
 };
 
