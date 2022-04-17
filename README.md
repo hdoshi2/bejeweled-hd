@@ -1,19 +1,19 @@
 # Bejeweled
 
--This repo contains an implementation of the Bejeweled game.
--The primary goal is to implement a rendering of the grid portion of the bejeweled game.
+-This repo contains an implementation of the Bejeweled game.  
+-The primary goal is to implement a rendering of the grid portion of the bejeweled game.  
 -When rendered, the solution should display the grid, and there should be an easy way (eg, refresh the
-page, click a “new grid button”) to generate a new grid.
--The grid should have cells of 7 different colors.
+page, click a “new grid button”) to generate a new grid.  
+-The grid should have cells of 7 different colors.  
 
 # Tech Stack
 
-The following technology was used to build the application:
+The following technology was used to build the application:  
 
-- React.js
-- Javascript
-- HTML
-- CSS
+- React.js  
+- Javascript  
+- HTML  
+- CSS  
 
 ## Getting Started:
 
