@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const useCheckBoard = ({ colors, width }) => {
-  const [currentColorArrangement, setCurrentColorArrangement] = useState([]);
-  const [boardSolved, setBoardSolved] = useState(false);
+  const [board, setBoard] = useState([]);
+  let currentBoard = [...board];
 
   const checkBoard = () => {
     let allHits = [];
@@ -10,14 +10,13 @@ const useCheckBoard = ({ colors, width }) => {
 
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-
+        const currentColor = currentBoard[row][col];
         //Check Horizontally
         if (col < width - 2) {
           let currentStreakHoriz = 1;
           let matchesHoriz = [[col, row]];
           for (let i = col + 1; i < width; i++) {
-            const nextColor = currentColorArrangement[row][i];
+            const nextColor = currentBoard[row][i];
             if (currentColor === nextColor) {
               currentStreakHoriz++;
               matchesHoriz.push(...[[i, row]]);
@@ -36,7 +35,7 @@ const useCheckBoard = ({ colors, width }) => {
           let currentStreakVertical = 1;
           let matchesVertical = [[col, row]];
           for (let i = row + 1; i < width; i++) {
-            const nextColor = currentColorArrangement[i][col];
+            const nextColor = currentBoard[i][col];
             if (currentColor === nextColor && currentColor !== "") {
               currentStreakVertical++;
               matchesVertical.push(...[[col, i]]);
@@ -51,58 +50,56 @@ const useCheckBoard = ({ colors, width }) => {
         }
       }
     }
-
     //Clear cells that meet match criteria
-    allHits.forEach((item) => {
-      currentColorArrangement[item[1]][item[0]] = "";
+    allHits.forEach((block) => {
+      currentBoard[block[1]][block[0]] = "";
     });
 
     return movePossible;
   };
 
   const checkFirstRowAndSpawn = () => {
-    // if (boardSolved) return;
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row === 0 && currentColor === "") {
-          const randomNumber = Math.floor(Math.random() * colors.length);
-          currentColorArrangement[row][col] = colors[randomNumber];
-        }
+    const firstRowIndex = 0;
+    for (let col = 0; col < width; col++) {
+      const currentColor = currentBoard[firstRowIndex][col];
+      if (currentColor === "") {
+        const randomNumber = Math.floor(Math.random() * colors.length);
+        currentBoard[firstRowIndex][col] = colors[randomNumber];
       }
     }
   };
 
-  const moveIntoBoxBelow = () => {
-    // if (boardSolved) return;
-
-    //Create string for comparison
-    const oldArrangement = JSON.stringify(currentColorArrangement);
-
+  const dropBlocksBelow = () => {
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
-        const currentColor = currentColorArrangement[row][col];
-        if (row !== width - 1 && currentColorArrangement[row + 1][col] === "") {
-          currentColorArrangement[row + 1][col] = currentColor;
-          currentColorArrangement[row][col] = "";
+        const currentColor = currentBoard[row][col];
+        if (row !== width - 1 && currentBoard[row + 1][col] === "") {
+          currentBoard[row + 1][col] = currentColor;
+          currentBoard[row][col] = "";
         }
       }
     }
-
-    //validate if current board is sovled by comparing before/after results
-    if (oldArrangement === JSON.stringify(currentColorArrangement)) {
-      setBoardSolved(true);
-    }
+    setBoard([...currentBoard]);
   };
+
+  const iterateBoard = () => {
+    checkBoard();
+    checkFirstRowAndSpawn();
+    dropBlocksBelow();
+  };
+
+  //Process board mechanics as changes/moves are made.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      iterateBoard();
+    }, 100);
+    return () => clearInterval(timer);
+  }, [currentBoard, board, iterateBoard]);
 
   return {
-    currentColorArrangement,
-    boardSolved,
-    setCurrentColorArrangement,
-    setBoardSolved,
+    setBoard,
+    currentBoard,
     checkBoard,
-    checkFirstRowAndSpawn,
-    moveIntoBoxBelow,
   };
 };
 

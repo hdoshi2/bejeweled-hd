@@ -1,4 +1,3 @@
-
 //Returns a random bejewled board with color assignments
 // For example:
 // [["DarkViolet", "navy", "red", "yellow", "DarkViolet", "red", "DarkViolet", "orange"],
