@@ -1,17 +1,14 @@
 //React
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const useProcessMove = ({ currentBoard, checkBoard }) => {
   const [firstClickedRow, setFirstClickedRow] = useState(null);
   const [firstClickedCol, setFirstClickedCol] = useState(null);
   const [secondClickedRow, setSecondClickedRow] = useState(null);
   const [secondClickedCol, setSecondClickedCol] = useState(null);
-  const [toggleClick, setToggleClick] = useState(true);
+  const [isFirstBoxClick, setIsFirstBoxClick] = useState(true);
 
-  const processMove = () => {
-    if (firstClickedRow == null || secondClickedRow == null) {
-      return;
-    }
+  const processMove = (secondClickedRow, secondClickedCol) => {
 
     const boxFirstColor = currentBoard[firstClickedRow][firstClickedCol];
     const boxSecondColor = currentBoard[secondClickedRow][secondClickedCol];
@@ -58,20 +55,16 @@ const useProcessMove = ({ currentBoard, checkBoard }) => {
 
   const handleBoxClick = (row, column) => {
     //Toggle to differentiate between first and second click
-    if (toggleClick) {
+    if (isFirstBoxClick) {
       setFirstClickedRow(row);
       setFirstClickedCol(column);
     } else {
       setSecondClickedRow(row);
       setSecondClickedCol(column);
+      processMove(row, column);
     }
-
-    setToggleClick(!toggleClick);
+    setIsFirstBoxClick(!isFirstBoxClick);
   };
-
-  useEffect(() => {
-    processMove();
-  }, [firstClickedRow, secondClickedRow, processMove]);
 
   return { firstClickedRow, firstClickedCol, secondClickedRow, secondClickedCol, handleBoxClick };
 };

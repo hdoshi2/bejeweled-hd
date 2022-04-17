@@ -53,28 +53,26 @@ const useCheckBoard = ({ colors, width }) => {
         }
       }
     }
-
     //Clear cells that meet match criteria
-    allHits.forEach((item) => {
-      currentBoard[item[1]][item[0]] = "";
+    allHits.forEach((block) => {
+      currentBoard[block[1]][block[0]] = "";
     });
 
     return movePossible;
   };
 
   const checkFirstRowAndSpawn = () => {
-    for (let row = 0; row < width; row++) {
-      for (let col = 0; col < width; col++) {
-        const currentColor = currentBoard[row][col];
-        if (row === 0 && currentColor === "") {
-          const randomNumber = Math.floor(Math.random() * colors.length);
-          currentBoard[row][col] = colors[randomNumber];
-        }
+    const firstRowIndex = 0;
+    for (let col = 0; col < width; col++) {
+      const currentColor = currentBoard[firstRowIndex][col];
+      if (currentColor === "") {
+        const randomNumber = Math.floor(Math.random() * colors.length);
+        currentBoard[firstRowIndex][col] = colors[randomNumber];
       }
     }
   };
 
-  const moveIntoBoxBelow = () => {
+  const dropBlocksBelow = () => {
     for (let row = 0; row < width; row++) {
       for (let col = 0; col < width; col++) {
         const currentColor = currentBoard[row][col];
@@ -90,9 +88,8 @@ const useCheckBoard = ({ colors, width }) => {
   const iterateBoard = () => {
     checkBoard();
     checkFirstRowAndSpawn();
-    moveIntoBoxBelow();
+    dropBlocksBelow();
   };
-
   //Process board mechanics as changes/moves are made.
   useEffect(() => {
     const timer = setInterval(() => {
